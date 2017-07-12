@@ -24,7 +24,7 @@ const csvStream = csv({
       race_driven: data.race_driven,
       track_id: data.track_id,
       challenger: data.challenger,
-      oponent: data.oponent,
+      opponent: data.opponent,
       money: data.money,
       fuel_consumption: data.fuel_consumption,
       winner: data.winner,

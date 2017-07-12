@@ -8,18 +8,21 @@
     "start": "nodemon --exec babel-node ./src/server",
     "wds": "webpack-dev-server",
     "build": "rimraf dist && babel src -d dist --ignore .test.js",
-    "import": "babel-node ./src/import-to-db"
+    "importData": "babel-node ./src/import-to-db"
   },
   "dependencies": {
     "babel-cli": "^6.24.1",
     "babel-polyfill": "^6.23.0",
     "babel-preset-stage-2": "^6.24.1",
     "body-parser": "^1.17.2",
+    "chart.js": "^2.6.0",
     "csvtojson": "^1.1.7",
     "d3": "^4.9.1",
     "express": "^4.15.3",
+    "immutable": "^3.8.1",
     "mongoose": "^4.11.1",
     "react": "^15.6.1",
+    "react-chartjs-2": "^2.1.0",
     "react-dom": "^15.6.1",
     "react-hot-loader": "next",
     "whatwg-fetch": "^2.0.3"

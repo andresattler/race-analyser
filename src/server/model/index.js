@@ -6,7 +6,7 @@ const Race = mongoose.model('Race', {
   race_driven: String,
   track_id: Number,
   challenger: Number,
-  oponent: Number,
+  opponent: Number,
   money: Number,
   fuel_consumption: Number,
   winner: Number,
