@@ -50,7 +50,7 @@ class App extends React.Component {
           ],
         }}
         />
-      <h3>Weather</h3>
+        <h3>Weather</h3>
         <Pie data={{
           datasets: [{
             data: this.state.weather,

@@ -24,13 +24,11 @@ const getNumberOfDrivers = new Promise((resolve) => {
     .then((data) => {
       drivers = data
     })
-    .then(() => {
-      Race.find().distinct('opponent').exec()
-      .then((data) => {
-        drivers.concat(data)
-        drivers.sort((a, b) => a - b).filter((a, b) => a !== b)
-        resolve(drivers.length)
-      })
+    .then(() => Race.find().distinct('opponent').exec())
+    .then((data) => {
+      drivers.concat(data)
+      drivers.sort((a, b) => a - b).filter((a, b) => a !== b)
+      resolve(drivers.length)
     })
 })
 
@@ -52,24 +50,24 @@ routes.get('/general', (req, res) => {
     data.status = values
   }).then(() => {
     const countWeather = count('weather')
-    Promise.all([
+    return Promise.all([
       countWeather('sunny'),
       countWeather('rainy'),
       countWeather('snowy'),
       countWeather('thundery'),
-    ]).then((values) => {
-      data.weather = values
-    })
-    .then(() => getNumberOfDrivers)
-    .then((numberOfDrivers) => {
-      data.numberOfDrivers = numberOfDrivers
-      return Race.count().exec()
-    })
-    .then((numberOfRaces) => {
-      console.log(numberOfRaces)
-      data.numberOfRaces = numberOfRaces
-      res.send(data)
-    })
+    ])
+  })
+  .then((values) => {
+    data.weather = values
+  })
+  .then(() => getNumberOfDrivers)
+  .then((numberOfDrivers) => {
+    data.numberOfDrivers = numberOfDrivers
+    return Race.count().exec()
+  })
+  .then((numberOfRaces) => {
+    data.numberOfRaces = numberOfRaces
+    res.send(data)
   })
 })
 export default routes
