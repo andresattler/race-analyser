@@ -17,7 +17,6 @@ Race.find({}, { track_id: 1 }).exec()x
     console.log(err)
   })
 */
-
 const getNumberOfDrivers = new Promise((resolve) => {
   let drivers
   Race.find().distinct('challenger').exec()
@@ -67,6 +66,11 @@ routes.get('/general', (req, res) => {
   })
   .then((numberOfRaces) => {
     data.numberOfRaces = numberOfRaces
+    return Race.distinct('track_id').exec()
+  })
+  .then((tracks) => {
+    console.log(tracks.length)
+    data.numberOfTracks = tracks.length
     res.send(data)
   })
 })
