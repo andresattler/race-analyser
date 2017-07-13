@@ -1,6 +1,5 @@
 import { Router } from 'express'
 
-
 import Race from '../model'
 
 const routes = Router()
@@ -69,7 +68,6 @@ routes.get('/general', (req, res) => {
     return Race.distinct('track_id').exec()
   })
   .then((tracks) => {
-    console.log(tracks.length)
     data.numberOfTracks = tracks.length
     res.send(data)
   })

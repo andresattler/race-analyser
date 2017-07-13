@@ -16,11 +16,12 @@ export default {
   module: {
     rules: [
       { test: /\.(js|jsx)$/, use: 'babel-loader', exclude: /node_modules/ },
+      { test: /\.styl$/, use: ['style-loader', 'css-loader', 'stylus-loader'] },
     ],
   },
   resolve: {
     extensions:
-    ['.js', '.jsx'],
+    ['.js', '.jsx', '.styl'],
   },
   devServer: {
     port: WDS_PORT,
