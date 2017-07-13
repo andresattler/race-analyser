@@ -2,6 +2,7 @@ import React from 'react'
 import { Pie } from 'react-chartjs-2'
 
 import NumberOfCard from '../number-of-card'
+import PieCard from '../pie-card'
 
 class Home extends React.Component {
   constructor(props) {
@@ -34,45 +35,8 @@ class Home extends React.Component {
         <NumberOfCard caption="Races" number={this.state.numberOfRaces} />
         <NumberOfCard caption="Drivers" number={this.state.numberOfDrivers} />
         <NumberOfCard caption="Tracks" number={this.state.numberOfTracks} />
-        <div className="card">
-          <h3>Status</h3>
-          <Pie data={{
-            datasets: [{
-              data: this.state.status,
-              backgroundColor: [
-                '#FF6384',
-                '#36A2EB',
-                '#FFCE56',
-              ],
-            }],
-            labels: [
-              'finished',
-              'declined',
-              'retired',
-            ],
-          }}
-          />
-        </div>
-        <div className="card">
-          <h3>Weather</h3>
-          <Pie data={{
-            datasets: [{
-              data: this.state.weather,
-              backgroundColor: [
-                '#FFCE56',
-                '#36A2EB',
-                '#FF6384',
-              ],
-            }],
-            labels: [
-              'sunny',
-              'rainy',
-              'snowy',
-              'thundery',
-            ],
-          }}
-          />
-        </div>
+        <PieCard caption="Status" data={this.state.status} labels={['finished', 'declined', 'retired']} />
+        <PieCard caption="Weather" data={this.state.weather} labels={['sunny', 'rainy', 'snowy', 'thundery']} />
       </div>
     )
   }
