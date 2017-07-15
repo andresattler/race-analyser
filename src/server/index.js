@@ -6,7 +6,11 @@ import { WEB_PORT } from '../shared/config'
 import routes from './routes'
 import renderApp from './render-app'
 
-mongoose.connect('mongodb://127.0.0.1:27017/races')
+mongoose.Promise = Promise
+
+mongoose.connect('mongodb://127.0.0.1:27017/races', {
+  useMongoClient: true,
+})
 
 const app = express()
 

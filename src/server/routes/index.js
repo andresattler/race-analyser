@@ -1,6 +1,9 @@
 import { Router } from 'express'
+import mongoose from 'mongoose'
 
 import Race from '../model'
+
+mongoose.Promise = global.Promise
 
 const routes = Router()
 
@@ -31,7 +34,7 @@ const getNumberOfDrivers = new Promise((resolve) => {
 })
 
 routes.get('/count', (req, res) => {
-  Race.count({ [req.param('key')]: req.param('val') }).exec()
+  Race.count({ [req.body.key]: req.body.val }).exec()
     .then((number) => {
       res.send({ number })
     })
