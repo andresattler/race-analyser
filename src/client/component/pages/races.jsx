@@ -5,6 +5,9 @@ class Races extends React.Component {
     return (
       <div className="content">
         <h1>Races</h1>
+        <ul>
+          <li></li>
+        </ul>
       </div>
     )
   }

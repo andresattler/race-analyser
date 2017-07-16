@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const Race = mongoose.model('Race', {
+export const Race = mongoose.model('Race', {
   _id: String,
   race_created: String,
   race_driven: String,
@@ -15,4 +15,10 @@ const Race = mongoose.model('Race', {
   weather: String,
 })
 
-export default Race
+export const Driver = mongoose.model('Driver', {
+  _id: String,
+  races_driven: Number,
+  as_challenger: Number,
+  as_opponent: Number,
+  races_wonn: Number,
+})

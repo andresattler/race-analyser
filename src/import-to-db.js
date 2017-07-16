@@ -3,14 +3,31 @@ import csv from 'csvtojson'
 import fs from 'fs'
 import mongoose from 'mongoose'
 
-import Race from './server/model'
+import { Race, Driver } from './server/model'
 
-mongoose.connect('mongodb://127.0.0.1:27017/races', (err) => {
-  if (err) {
-    // eslint-disable-next-line no-console
-    console.log('db connection failed', err)
-  }
+mongoose.Promise = global.Promise
+
+mongoose.connect('mongodb://127.0.0.1:27017/races', {
+  useMongoClient: true,
 })
+
+const optimizeDrivers = () =>
+  Promise.all([
+    Race.find().distinct('challenger'),
+    Race.find().distinct('opponent'),
+  ])
+    .then((data) => {
+      const drivers =
+        data[0].concat(data[1])
+        .sort((a, b) => a - b)
+        .filter((val, i, arr) => val !== arr[i + 1])
+      return Promise.all(drivers.map((val) => {
+        const driver = new Driver({
+          _id: val,
+        })
+        return driver.save()
+      }))
+    })
 
 const stream = fs.createReadStream('./races.csv')
 
@@ -32,11 +49,20 @@ const csvStream = csv({
       forecast: data.forecast,
       weather: data.weather,
     })
-    race.save()
+    race.save().catch((err) => {
+      // eslint-disable-next-line no-console
+      console.log(err.message)
+    })
   })
   .on('end', () => {
     // eslint-disable-next-line no-console
-    console.log('done')
+    console.log('saved data to db')
+    // eslint-disable-next-line no-console
+    console.log('optimizing...')
+    optimizeDrivers()
+      .then(() => {
+        process.exit(0)
+      })
   })
 
 stream.pipe(csvStream)
