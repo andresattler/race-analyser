@@ -20,5 +20,5 @@ export const Driver = mongoose.model('Driver', {
   races_driven: Number,
   as_challenger: Number,
   as_opponent: Number,
-  races_wonn: Number,
+  races_won: Number,
 })

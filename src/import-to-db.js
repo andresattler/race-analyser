@@ -1,6 +1,6 @@
 
 import csv from 'csvtojson'
-import fs from 'fs'
+// import fs from 'fs'
 import mongoose from 'mongoose'
 
 import { Race, Driver } from './server/model'
@@ -11,58 +11,70 @@ mongoose.connect('mongodb://127.0.0.1:27017/races', {
   useMongoClient: true,
 })
 
-const optimizeDrivers = () =>
-  Promise.all([
-    Race.find().distinct('challenger'),
-    Race.find().distinct('opponent'),
-  ])
-    .then((data) => {
-      const drivers =
-        data[0].concat(data[1])
-        .sort((a, b) => a - b)
-        .filter((val, i, arr) => val !== arr[i + 1])
-      return Promise.all(drivers.map((val) => {
-        const driver = new Driver({
-          _id: val,
-        })
-        return driver.save()
-      }))
-    })
-
-const stream = fs.createReadStream('./races.csv')
-
-const csvStream = csv({
-  delimiter: ';',
-})
+const optimizeDrivers = async () => {
+  const drivers = {}
+  const raceList = await Race.find({}).select({ challenger: 1, opponent: 1, winner: 1 })
+  const challengerList = raceList.map(obj => obj.challenger)
+  const opponentList = raceList.map(obj => obj.opponent)
+  const winnList = raceList.map(obj => obj.winner)
+  challengerList.forEach((val) => {
+    if (!Object.prototype.hasOwnProperty.call(drivers, val)) {
+      drivers[val] = {
+        _id: val,
+        races_driven: 1,
+        as_challenger: 1,
+        as_opponent: 0,
+        winns: 0,
+      }
+    } else {
+      drivers[val].races_driven += 1
+      drivers[val].as_challenger += 1
+    }
+  })
+  opponentList.forEach((val) => {
+    if (!Object.prototype.hasOwnProperty.call(drivers, val)) {
+      drivers[val] = {
+        _id: val,
+        races_driven: 1,
+        as_opponent: 1,
+        as_challenger: 0,
+        winns: 0,
+      }
+    } else {
+      drivers[val].races_driven += 1
+      drivers[val].as_opponent += 1
+    }
+  })
+  winnList.forEach((val) => {
+    drivers[val].winns += 1
+  })
+  const driverList = Object.values(drivers)
+  Driver.insertMany(driverList)
+}
+const arr = []
+csv({ delimiter: ';' })
+  .fromFile('./races.csv')
   .on('json', (data) => {
-    const race = new Race({
-      _id: data.id,
-      race_created: data.race_created,
-      race_driven: data.race_driven,
-      track_id: data.track_id,
-      challenger: data.challenger,
-      opponent: data.opponent,
-      money: data.money,
-      fuel_consumption: data.fuel_consumption,
-      winner: data.winner,
-      status: data.status,
-      forecast: data.forecast,
-      weather: data.weather,
-    })
-    race.save().catch((err) => {
-      // eslint-disable-next-line no-console
-      console.log(err.message)
-    })
+    arr.push(data)
   })
-  .on('end', () => {
-    // eslint-disable-next-line no-console
-    console.log('saved data to db')
-    // eslint-disable-next-line no-console
-    console.log('optimizing...')
-    optimizeDrivers()
-      .then(() => {
-        process.exit(0)
-      })
+  .on('done', () => {
+    const insertMany = (start = 0, end = 999) => {
+      Race.insertMany(arr.slice(0, 1000), { ordered: false })
+        .then(() => {
+          if (arr.length + 1000 > end) {
+            insertMany(start + 1000, end + 1000)
+            console.log(`inserted ${end}`)
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+    insertMany()
   })
-
-stream.pipe(csvStream)
+/*
+optimizeDrivers()
+  .then(() => {
+  //  process.exit(0)
+  })
+*/
