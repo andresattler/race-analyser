@@ -1,6 +1,6 @@
 
 import csv from 'csvtojson'
-// import fs from 'fs'
+import Bar from 'progress-bar'
 import mongoose from 'mongoose'
 
 import { Race, Driver } from './server/model'
@@ -58,12 +58,19 @@ csv({ delimiter: ';' })
     arr.push(data)
   })
   .on('done', () => {
-    const insertMany = (start = 0, end = 999) => {
-      Race.insertMany(arr.slice(0, 1000), { ordered: false })
+    const bar = Bar.create(process.stdout)
+    bar.format = '$bar; $percentage;% inserted.'
+    const insertMany = (start = 0, end = 1000) => {
+      Race.insertMany(arr.slice(start, end), { ordered: false })
         .then(() => {
           if (arr.length + 1000 > end) {
             insertMany(start + 1000, end + 1000)
-            console.log(`inserted ${end}`)
+            bar.update(end / (arr.length + 1000))
+          } else {
+            optimizeDrivers()
+              .then(() => {
+                process.exit(0)
+              })
           }
         })
         .catch((err) => {
@@ -73,8 +80,5 @@ csv({ delimiter: ';' })
     insertMany()
   })
 /*
-optimizeDrivers()
-  .then(() => {
-  //  process.exit(0)
-  })
+
 */

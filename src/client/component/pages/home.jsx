@@ -15,12 +15,6 @@ class Home extends React.Component {
     }
   }
   componentDidMount() {
-    fetch('/api/count?key=weather&val=sunny', {
-      method: 'GET' })
-      .then(res => res.json())
-      .then(({ number }) => {
-        this.setState({ number })
-      })
     fetch('/api/general', {
       method: 'GET' })
       .then(res => res.json())
